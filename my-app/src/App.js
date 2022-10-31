@@ -1,61 +1,52 @@
 import React, { useState } from 'react';
 import './App.css';
-import {DelayInput} from 'react-delay-input';
+import { DelayInput } from 'react-delay-input';
 import pokemon from 'pokemontcgsdk'
 
-pokemon.configure({ apiKey: 'ee4d4085-9702-4e4b-abaa-d6f970c3594f' })
+pokemon.configure({ apiKey: 'ecf27079b-2658-4a36-b8d8-e779ae9581c2' })
 function App() {
-  let [counter, setCounter] = useState(2);
-  let handleClick = (incrementValue) => setCounter(counter + incrementValue);
+  let [mon, setCurrentMon] = useState("");
+  let handleUpdate = (monValue) => setCurrentMon(monValue);
   return (
     <div className="App">
-      <header className="App-header">
-        <div id="counter">
-          <div className="grid-container">
-            <Form />
-            <Button handleClickFunc={handleClick} increment={8} />
-            <Button handleClickFunc={handleClick} increment={4} />
-            <Button handleClickFunc={handleClick} increment={2} />
-            <Display message={counter} />
-          </div>
-        </div>
-      </header>
+      <Form handleChangeFunc={handleUpdate}/>
+      <Container currentMon={mon} />
     </div>
   );
 }
 
-function Button(props) {
-  const handleClick = () => props.handleClickFunc(props.increment)
-  return (<button onClick={handleClick}>
-    +{props.increment}
-  </button>)
-}
+function Container(props) {
 
-function Display(props) {
+  console.log(props?.currentMon?.cardmarket.prices.averageSellPrice)
   return (
-    <div className="display">{props.message}</div>
+    <div className='Container'>
+      <h3 className='title'>{props?.currentMon?.name}</h3>
+      <p className='bodyText'>Rarity: {props?.currentMon?.rarity}</p>
+      <p className='bodyText'>Average Sell Price: {props?.currentMon?.cardmarket?.prices?.averageSellPrice}$</p>
+      <img className='cardImage' src={props?.currentMon?.images?.small} />
+    </div>
   );
 }
 
 class Form extends React.Component {
   pokemonNameInput = React.createRef();
-  pokemons = pokemon.card.where({q: "set.id:base1" })
-  handleChange = async() => {
+  pokemons = pokemon.card.where({ q: "set.id:base1" })
+  handleChange = async () => {
     let pokemonss = await this.pokemons;
     const result = Object.values(pokemonss.data);
-    let currentMon = result.find(({name}) => name.toLowerCase().match(`${this.pokemonNameInput.current.value.toLowerCase()}*`));
-    if(currentMon != null)
-      console.log(currentMon);
+    let currentMon = result.find(({ name }) => name.toLowerCase().match(`${this.pokemonNameInput.current.value.toLowerCase()}*`));
+    this.props.handleChangeFunc(currentMon);
   };
   render() {
     return (
       <div>
-        <DelayInput 
+        <DelayInput
+          className="pokemonInput"
           placeholder="Pokemon"
           delayTimeout={800}
           onChange={this.handleChange}
-          inputRef={this.pokemonNameInput}/>
-       
+          inputRef={this.pokemonNameInput} />
+
       </div>
     );
   }
