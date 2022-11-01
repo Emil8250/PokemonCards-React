@@ -16,8 +16,6 @@ function App() {
 }
 
 function Container(props) {
-
-  console.log(props?.currentMon?.cardmarket.prices.averageSellPrice)
   return (
     <div className='Container'>
       <h3 className='title'>{props?.currentMon?.name}</h3>
@@ -34,7 +32,9 @@ class Form extends React.Component {
   handleChange = async () => {
     let pokemonss = await this.pokemons;
     const result = Object.values(pokemonss.data);
-    let currentMon = result.find(({ name }) => name.toLowerCase().match(`${this.pokemonNameInput.current.value.toLowerCase()}*`));
+    let currentMon = "";
+    if(this?.pokemonNameInput?.current?.value?.toLowerCase() != "")
+      currentMon = result?.find(({ name }) => name?.toLowerCase()?.match(`${this?.pokemonNameInput?.current?.value?.toLowerCase()}*`));
     this.props.handleChangeFunc(currentMon);
   };
   render() {
@@ -43,7 +43,7 @@ class Form extends React.Component {
         <DelayInput
           className="pokemonInput"
           placeholder="Pokemon"
-          delayTimeout={800}
+          delayTimeout={300}
           onChange={this.handleChange}
           inputRef={this.pokemonNameInput} />
 
